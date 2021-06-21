@@ -1,47 +1,44 @@
 package wpool
 
-import "context"
+import (
+	"context"
+)
 
-type jobID string
+type JobID string
 type jobType string
 type jobMetadata map[string]interface{}
 
 type executionFn func(ctx context.Context, args interface{}) (interface{}, error)
 
-type runnable interface {
-	Execute() result
+type Job struct {
+	Descriptor JobDescriptor
+	ExecFn     executionFn
+	Args       interface{}
 }
 
-type job struct {
-	descriptor jobDescriptor
-	execFn     executionFn
-	ctx        context.Context
-	args       interface{}
+type JobDescriptor struct {
+	ID       JobID
+	JType    jobType
+	Metadata map[string]interface{}
 }
 
-type jobDescriptor struct {
-	id       jobID
-	jType    jobType
-	metadata map[string]interface{}
+type Result struct {
+	Value      interface{}
+	Err        error
+	Descriptor JobDescriptor
 }
 
-type result struct {
-	value         interface{}
-	err           error
-	jobDescriptor jobDescriptor
-}
-
-func (j job) Execute() result {
-	value, err := j.execFn(j.ctx, j.args)
+func (j Job) Execute(ctx context.Context) Result {
+	value, err := j.ExecFn(ctx, j.Args)
 	if err != nil {
-		return result{
-			err:           err,
-			jobDescriptor: j.descriptor,
+		return Result{
+			Err:        err,
+			Descriptor: j.Descriptor,
 		}
 	}
 
-	return result{
-		value:         value,
-		jobDescriptor: j.descriptor,
+	return Result{
+		Value:      value,
+		Descriptor: j.Descriptor,
 	}
 }

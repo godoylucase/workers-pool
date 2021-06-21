@@ -9,10 +9,10 @@ import (
 
 var (
 	errDefault = errors.New("wrong argument type")
-	descriptor = jobDescriptor{
-		id:    jobID("1"),
-		jType: jobType("anyType"),
-		metadata: jobMetadata{
+	descriptor = JobDescriptor{
+		ID:    JobID("1"),
+		JType: jobType("anyType"),
+		Metadata: jobMetadata{
 			"foo": "foo",
 			"bar": "bar",
 		},
@@ -28,29 +28,28 @@ var (
 )
 
 func Test_job_Execute(t *testing.T) {
+	ctx := context.TODO()
+
 	type fields struct {
-		descriptor jobDescriptor
+		descriptor JobDescriptor
 		execFn     executionFn
-		ctx        context.Context
 		args       interface{}
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   result
+		want   Result
 	}{
 		{
 			name: "job execution success",
 			fields: fields{
 				descriptor: descriptor,
 				execFn:     execFn,
-				ctx:        context.TODO(),
 				args:       10,
 			},
-			want: result{
-				value:         20,
-				err:           nil,
-				jobDescriptor: descriptor,
+			want: Result{
+				Value:      20,
+				Descriptor: descriptor,
 			},
 		},
 		{
@@ -58,25 +57,31 @@ func Test_job_Execute(t *testing.T) {
 			fields: fields{
 				descriptor: descriptor,
 				execFn:     execFn,
-				ctx:        context.TODO(),
 				args:       "10",
 			},
-			want: result{
-				value:         nil,
-				err:           errDefault,
-				jobDescriptor: descriptor,
+			want: Result{
+				Err:        errDefault,
+				Descriptor: descriptor,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			j := job{
-				descriptor: tt.fields.descriptor,
-				execFn:     tt.fields.execFn,
-				ctx:        tt.fields.ctx,
-				args:       tt.fields.args,
+			j := Job{
+				Descriptor: tt.fields.descriptor,
+				ExecFn:     tt.fields.execFn,
+				Args:       tt.fields.args,
 			}
-			if got := j.Execute(); !reflect.DeepEqual(got, tt.want) {
+
+			got := j.Execute(ctx)
+			if tt.want.Err != nil {
+				if !reflect.DeepEqual(got.Err, tt.want.Err) {
+					t.Errorf("Execute() = %v, wantError %v", got.Err, tt.want.Err)
+				}
+				return
+			}
+
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Execute() = %v, want %v", got, tt.want)
 			}
 		})
