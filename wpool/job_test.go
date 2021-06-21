@@ -32,7 +32,7 @@ func Test_job_Execute(t *testing.T) {
 
 	type fields struct {
 		descriptor JobDescriptor
-		execFn     executionFn
+		execFn     ExecutionFn
 		args       interface{}
 	}
 	tests := []struct {

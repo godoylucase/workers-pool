@@ -8,11 +8,11 @@ type JobID string
 type jobType string
 type jobMetadata map[string]interface{}
 
-type executionFn func(ctx context.Context, args interface{}) (interface{}, error)
+type ExecutionFn func(ctx context.Context, args interface{}) (interface{}, error)
 
 type Job struct {
 	Descriptor JobDescriptor
-	ExecFn     executionFn
+	ExecFn     ExecutionFn
 	Args       interface{}
 }
 

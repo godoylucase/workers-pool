@@ -61,9 +61,9 @@ func (wp WorkerPool) Results() <-chan Result {
 	return wp.results
 }
 
-func (wp WorkerPool) FeedWith(jobs []Job) {
-	for i, _ := range jobs {
-		wp.jobs <- jobs[i]
+func (wp WorkerPool) FeedWith(jobsBulk []Job) {
+	for i, _ := range jobsBulk {
+		wp.jobs <- jobsBulk[i]
 	}
 	close(wp.jobs)
 }
