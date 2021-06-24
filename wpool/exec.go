@@ -14,7 +14,7 @@ func worker(ctx context.Context, wg *sync.WaitGroup, jobs <-chan Job, results ch
 			if !ok {
 				return
 			}
-			results <- job.Execute(ctx)
+			results <- job.execute(ctx)
 		case <-ctx.Done():
 			fmt.Printf("cancelled worker. Error detail: %v\n", ctx.Err())
 			results <- Result{
@@ -53,8 +53,8 @@ func (wp WorkerPool) Run(ctx context.Context) {
 	}
 
 	wg.Wait()
-	close(wp.results)
 	close(wp.Done)
+	close(wp.results)
 }
 
 func (wp WorkerPool) Results() <-chan Result {

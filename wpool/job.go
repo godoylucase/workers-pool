@@ -28,7 +28,7 @@ type Result struct {
 	Descriptor JobDescriptor
 }
 
-func (j Job) Execute(ctx context.Context) Result {
+func (j Job) execute(ctx context.Context) Result {
 	value, err := j.ExecFn(ctx, j.Args)
 	if err != nil {
 		return Result{

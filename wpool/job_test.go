@@ -73,16 +73,16 @@ func Test_job_Execute(t *testing.T) {
 				Args:       tt.fields.args,
 			}
 
-			got := j.Execute(ctx)
+			got := j.execute(ctx)
 			if tt.want.Err != nil {
 				if !reflect.DeepEqual(got.Err, tt.want.Err) {
-					t.Errorf("Execute() = %v, wantError %v", got.Err, tt.want.Err)
+					t.Errorf("execute() = %v, wantError %v", got.Err, tt.want.Err)
 				}
 				return
 			}
 
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Execute() = %v, want %v", got, tt.want)
+				t.Errorf("execute() = %v, want %v", got, tt.want)
 			}
 		})
 	}
