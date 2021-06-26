@@ -10,12 +10,6 @@ type jobMetadata map[string]interface{}
 
 type ExecutionFn func(ctx context.Context, args interface{}) (interface{}, error)
 
-type Job struct {
-	Descriptor JobDescriptor
-	ExecFn     ExecutionFn
-	Args       interface{}
-}
-
 type JobDescriptor struct {
 	ID       JobID
 	JType    jobType
@@ -26,6 +20,12 @@ type Result struct {
 	Value      interface{}
 	Err        error
 	Descriptor JobDescriptor
+}
+
+type Job struct {
+	Descriptor JobDescriptor
+	ExecFn     ExecutionFn
+	Args       interface{}
 }
 
 func (j Job) execute(ctx context.Context) Result {

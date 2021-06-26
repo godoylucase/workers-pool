@@ -19,7 +19,7 @@ func TestWorkerPool(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.TODO())
 	defer cancel()
 
-	go wp.FeedWith(testJobs())
+	go wp.GenerateFrom(testJobs())
 
 	go wp.Run(ctx)
 

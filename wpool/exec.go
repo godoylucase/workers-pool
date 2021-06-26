@@ -14,6 +14,7 @@ func worker(ctx context.Context, wg *sync.WaitGroup, jobs <-chan Job, results ch
 			if !ok {
 				return
 			}
+			// fan-in job execution multiplexing results into the results channel
 			results <- job.execute(ctx)
 		case <-ctx.Done():
 			fmt.Printf("cancelled worker. Error detail: %v\n", ctx.Err())
@@ -61,7 +62,7 @@ func (wp WorkerPool) Results() <-chan Result {
 	return wp.results
 }
 
-func (wp WorkerPool) FeedWith(jobsBulk []Job) {
+func (wp WorkerPool) GenerateFrom(jobsBulk []Job) {
 	for i, _ := range jobsBulk {
 		wp.jobs <- jobsBulk[i]
 	}
