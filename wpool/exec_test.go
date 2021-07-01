@@ -27,7 +27,7 @@ func TestWorkerPool(t *testing.T) {
 		select {
 		case r, ok := <-wp.Results():
 			if !ok {
-				continue
+				return
 			}
 
 			i, err := strconv.ParseInt(string(r.Descriptor.ID), 10, 64)
@@ -39,8 +39,6 @@ func TestWorkerPool(t *testing.T) {
 			if val != int(i)*2 {
 				t.Fatalf("wrong value %v; expected %v", val, int(i)*2)
 			}
-		case <-wp.Done:
-			return
 		default:
 		}
 	}
@@ -56,12 +54,14 @@ func TestWorkerPool_TimeOut(t *testing.T) {
 
 	for {
 		select {
-		case r := <-wp.Results():
+		case r, ok := <-wp.Results():
+			if !ok {
+				return
+			}
+
 			if r.Err != nil && r.Err != context.DeadlineExceeded {
 				t.Fatalf("expected error: %v; got: %v", context.DeadlineExceeded, r.Err)
 			}
-		case <-wp.Done:
-			return
 		default:
 		}
 	}
@@ -77,12 +77,14 @@ func TestWorkerPool_Cancel(t *testing.T) {
 
 	for {
 		select {
-		case r := <-wp.Results():
+		case r, ok := <-wp.Results():
+			if !ok {
+				return
+			}
+
 			if r.Err != nil && r.Err != context.Canceled {
 				t.Fatalf("expected error: %v; got: %v", context.Canceled, r.Err)
 			}
-		case <-wp.Done:
-			return
 		default:
 		}
 	}
